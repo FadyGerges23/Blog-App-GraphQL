@@ -2,10 +2,8 @@
 
 module Types
   class UserType < Types::BaseObject
-    field :id, ID
-    field :email, String
-    field :username, String
-    field :password, String
-    field :passwordConfirmation, String
+    field :id, ID, null: false
+    field :email, String, null: false
+    field :username, String, null: false
   end
 end
