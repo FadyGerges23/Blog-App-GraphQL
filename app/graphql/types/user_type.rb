@@ -5,5 +5,7 @@ module Types
     field :id, ID, null: false
     field :email, String, null: false
     field :username, String, null: false
+    field :display_name, String
+    field :token, String
   end
 end

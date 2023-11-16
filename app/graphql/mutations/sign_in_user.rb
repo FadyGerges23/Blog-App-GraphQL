@@ -26,12 +26,13 @@ class Mutations::SignInUser < Mutations::BaseMutation
   
         response = http.request(request)
         data = JSON.parse(response.body)
+        bearer_token = response['Authorization']&.split('Bearer ')&.last
   
         # Check if the request was successful (HTTP status code 2xx)
         if response.is_a?(Net::HTTPSuccess)
             # Return the user data fetched from the backend server
             {
-                user: data["user"],
+                user: data["user"].merge({ token: bearer_token }),
                 errors: []
             }
         else
