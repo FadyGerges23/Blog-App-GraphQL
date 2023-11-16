@@ -12,6 +12,7 @@ class Mutations::EditUser < Mutations::BaseMutation
             user: {
                 email: user[:email],
                 username: user[:username],
+                display_name: user[:displayName],
                 password: user[:password],
                 password_confirmation: user[:passwordConfirmation],
                 current_password: user[:currentPassword]

@@ -4,6 +4,7 @@ module Types
   class EditProfileInputType < Types::BaseInputObject
     argument :email, String
     argument :username, String
+    argument :displayName, String
     argument :password, String, required: false
     argument :passwordConfirmation, String, required: false
     argument :currentPassword, String
