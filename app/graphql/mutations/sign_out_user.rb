@@ -5,7 +5,6 @@ class Mutations::SignOutUser < Mutations::BaseMutation
 
     def resolve
         bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
-        puts bearer_token
         
         # Make an HTTP POST request to the backend server's RESTful API endpoint
         uri = URI('http://localhost:3000/users/sign_out')

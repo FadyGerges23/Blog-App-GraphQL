@@ -21,11 +21,42 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
-    # TODO: remove me
-    field :test_field, String, null: false,
-      description: "An example field added by the generator"
-    def test_field
-      "Hello World!"
+    field :current_user, Types::CurrentUserType, null: false
+    
+    def current_user
+      bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
+    
+      # Make an HTTP POST request to the backend server's RESTful API endpoint
+      uri = URI('http://localhost:3000/current_user')
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 
+        'Accept' => 'application/json',
+        'Authorization' => "Bearer #{bearer_token}"
+      })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+      puts "Watchccc"
+      puts data
+
+      # Check if the request was successful (HTTP status code 2xx)
+      if response.is_a?(Net::HTTPSuccess)
+          # Return the user data fetched from the backend server
+          {
+              email: data["email"],
+              username: data["username"],
+              displayName: data["display_name"],
+              error: nil
+          }
+      else
+          {
+              email: nil,
+              username: nil,
+              displayName: nil,
+              error: data["error"]
+          }
+      end
     end
+
   end
 end

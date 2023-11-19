@@ -3,7 +3,6 @@ require 'net/http'
 class Mutations::EditUser < Mutations::BaseMutation
     argument :user, Types::EditProfileInputType
     
-    field :user, Types::UserType
     field :errors, [String]
 
     def resolve(user:)
@@ -37,12 +36,10 @@ class Mutations::EditUser < Mutations::BaseMutation
         if response.is_a?(Net::HTTPSuccess)
             # Return the user data fetched from the backend server
             {
-                user: data["user"],
                 errors: []
             }
         else
             {
-                user: nil,
                 errors: data["errors"]
             }
         end
