@@ -2,6 +2,7 @@
 
 module Types
   class EditProfileInputType < Types::BaseInputObject
+    argument :id, ID
     argument :email, String
     argument :username, String
     argument :displayName, String
