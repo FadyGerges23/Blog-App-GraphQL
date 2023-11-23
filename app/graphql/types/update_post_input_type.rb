@@ -6,5 +6,6 @@ module Types
       argument :postId, ID
       argument :title, String
       argument :body, String
+      argument :categoryId, ID
     end
   end

@@ -45,7 +45,6 @@ module Types
               username: data["username"],
               displayName: data["display_name"],
               avatar: data["avatar_url"],
-              posts: data["posts"],
               error: nil
           }
       else
@@ -54,9 +53,32 @@ module Types
               username: nil,
               displayName: nil,
               avatar: nil,
-              posts: nil,
               error: data["error"]
           }
+      end
+    end
+
+    field :posts, [Types::PostType] do
+      argument :userId, ID
+    end
+
+    def posts(userId:)
+      bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
+    
+      uri = URI("http://localhost:3000/users/#{userId}/posts")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 
+        'Accept' => 'application/json',
+        'Authorization' => "Bearer #{bearer_token}"
+      })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+
+      if response.is_a?(Net::HTTPSuccess)
+          data["posts"]
+      else
+          nil
       end
     end
 
@@ -80,17 +102,26 @@ module Types
       data = JSON.parse(response.body)
 
       if response.is_a?(Net::HTTPSuccess)
-          {
-              id: data["id"],
-              title: data["title"],
-              body: data["body"]
-          }
+          data
       else
-          {
-            id: nil,
-            title: nil,
-            body: nil
-          }
+          nil
+      end
+    end
+
+    field :categories, [Types::CategoryType]
+
+    def categories
+      uri = URI("http://localhost:3000/categories")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 'Accept' => 'application/json' })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+ 
+      if response.is_a?(Net::HTTPSuccess)
+          data["categories"]
+      else
+          nil
       end
     end
 

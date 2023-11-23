@@ -6,7 +6,6 @@ module Types
     field :username, String
     field :displayName, String
     field :avatar, String
-    field :posts, [Types::PostType]
     field :error, String
   end
 end

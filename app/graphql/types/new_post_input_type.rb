@@ -5,6 +5,7 @@ module Types
       argument :userId, ID
       argument :title, String
       argument :body, String
+      argument :categoryId, ID
     end
   end
   

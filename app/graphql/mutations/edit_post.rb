@@ -10,7 +10,8 @@ class Mutations::EditPost < Mutations::BaseMutation
         # Prepare the request body
         post_data = {
             title: post[:title],
-            body: post[:body]
+            body: post[:body],
+            category_id: post[:categoryId]
         }
   
         # Convert the post data to JSON
