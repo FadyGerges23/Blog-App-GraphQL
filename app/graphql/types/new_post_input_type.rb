@@ -6,6 +6,7 @@ module Types
       argument :title, String
       argument :body, String
       argument :categoryId, ID
+      argument :tagsIds, [ID]
     end
   end
   

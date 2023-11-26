@@ -125,5 +125,28 @@ module Types
       end
     end
 
+
+    field :tags, [Types::TagType]
+
+    def tags
+      uri = URI("http://localhost:3000/tags")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 'Accept' => 'application/json' })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+ 
+      if response.is_a?(Net::HTTPSuccess)
+          tags = data["tags"].map do |tag| 
+            {
+              tagId: tag["id"],
+              name: tag["name"]
+            }
+          end
+      else
+          nil
+      end
+    end
+
   end
 end

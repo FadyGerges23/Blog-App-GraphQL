@@ -6,5 +6,6 @@ module Types
     field :title, String, null: false
     field :body, String, null: false
     field :category, Types::CategoryType
+    field :tags, [Types::TagType]
   end
 end

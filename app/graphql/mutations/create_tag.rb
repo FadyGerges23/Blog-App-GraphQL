@@ -1,29 +1,26 @@
 require 'net/http'
 
-class Mutations::EditPost < Mutations::BaseMutation
-    argument :post, Types::UpdatePostInputType
+class Mutations::CreateTag < Mutations::BaseMutation
+    argument :tag, Types::NewTagInputType
     
-    field :post, Types::PostType
+    field :tag, Types::TagType
     field :errors, [String]
 
-    def resolve(post:)
+    def resolve(tag:)
         # Prepare the request body
-        post_data = {
-            title: post[:title],
-            body: post[:body],
-            category_id: post[:categoryId],
-            tags_ids: post[:tagsIds]
+        tag_data = {
+            name: tag[:name]
         }
   
         # Convert the post data to JSON
-        json_data = post_data.to_json
+        json_data = tag_data.to_json
 
         bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
   
         # Make an HTTP POST request to the backend server's RESTful API endpoint
-        uri = URI("http://localhost:3000/users/#{post[:userId]}/posts/#{post[:postId]}")
+        uri = URI("http://localhost:3000/tags")
         http = Net::HTTP.new(uri.host, uri.port)
-        request = Net::HTTP::Put.new(uri.path, { 
+        request = Net::HTTP::Post.new(uri.path, { 
             'Content-Type' => 'application/json',
             'Authorization' => "Bearer #{bearer_token}"
         })
@@ -36,12 +33,15 @@ class Mutations::EditPost < Mutations::BaseMutation
         if response.is_a?(Net::HTTPSuccess)
             # Return the post data fetched from the backend server
             {
-                post: data["post"],
+                tag: {
+                    tagId: data["tag"]["id"],
+                    name: data["tag"]["name"]
+                },
                 errors: []
             }
         else
             {
-                post: nil,
+                tag: nil,
                 errors: data["errors"]
             }
         end

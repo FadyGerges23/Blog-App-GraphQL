@@ -11,7 +11,8 @@ class Mutations::CreatePost < Mutations::BaseMutation
         post_data = {
             title: post[:title],
             body: post[:body],
-            category_id: post[:categoryId]
+            category_id: post[:categoryId],
+            tags_ids: post[:tagsIds]
         }
   
         # Convert the post data to JSON
