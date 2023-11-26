@@ -21,7 +21,7 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
-    field :current_user, Types::CurrentUserType, null: false
+    field :current_user, Types::UserType, null: false
 
     def current_user
       bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
@@ -41,6 +41,7 @@ module Types
       if response.is_a?(Net::HTTPSuccess)
           # Return the user data fetched from the backend server
           {
+              id: data["id"],
               email: data["email"],
               username: data["username"],
               displayName: data["display_name"],

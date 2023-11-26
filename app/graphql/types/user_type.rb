@@ -2,7 +2,12 @@
 
 module Types
   class UserType < Types::BaseObject
-    field :id, ID, null: false
+    field :id, ID
+    field :email, String
+    field :username, String
+    field :displayName, String
+    field :avatar, String
     field :token, String
+    field :error, String
   end
 end
