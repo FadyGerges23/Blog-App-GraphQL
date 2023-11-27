@@ -21,7 +21,7 @@ class Mutations::CreatePost < Mutations::BaseMutation
         bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
   
         # Make an HTTP POST request to the backend server's RESTful API endpoint
-        uri = URI("http://localhost:3000/users/#{post[:userId]}/posts")
+        uri = URI("http://localhost:3000/users/#{post[:userId]}/user_posts")
         http = Net::HTTP.new(uri.host, uri.port)
         request = Net::HTTP::Post.new(uri.path, { 
             'Content-Type' => 'application/json',

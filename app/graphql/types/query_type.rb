@@ -59,14 +59,14 @@ module Types
       end
     end
 
-    field :posts, [Types::PostType] do
+    field :user_posts, [Types::PostType] do
       argument :userId, ID
     end
 
-    def posts(userId:)
+    def user_posts(userId:)
       bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
     
-      uri = URI("http://localhost:3000/users/#{userId}/posts")
+      uri = URI("http://localhost:3000/users/#{userId}/user_posts")
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Get.new(uri.path, { 
         'Accept' => 'application/json',
@@ -84,15 +84,15 @@ module Types
     end
 
 
-    field :post, Types::PostType do
+    field :user_post, Types::PostType do
       argument :userId, ID
       argument :postId, ID
     end
 
-    def post(userId:, postId:)
+    def user_post(userId:, postId:)
       bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
     
-      uri = URI("http://localhost:3000/users/#{userId}/posts/#{postId}")
+      uri = URI("http://localhost:3000/users/#{userId}/user_posts/#{postId}")
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Get.new(uri.path, { 
         'Accept' => 'application/json',
@@ -144,6 +144,44 @@ module Types
               name: tag["name"]
             }
           end
+      else
+          nil
+      end
+    end
+
+    
+    field :posts, [Types::PostType]
+
+    def posts
+      uri = URI("http://localhost:3000/posts")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 'Accept' => 'application/json' })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+
+      if response.is_a?(Net::HTTPSuccess)
+          data["posts"]
+      else
+          nil
+      end
+    end
+
+
+    field :post, Types::PostType do
+      argument :postId, ID
+    end
+
+    def post(postId:)    
+      uri = URI("http://localhost:3000/posts/#{postId}")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 'Accept' => 'application/json' })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+
+      if response.is_a?(Net::HTTPSuccess)
+          data
       else
           nil
       end
