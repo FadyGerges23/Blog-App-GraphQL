@@ -21,11 +21,133 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
-    # TODO: remove me
-    field :test_field, String, null: false,
-      description: "An example field added by the generator"
-    def test_field
-      "Hello World!"
+    field :current_user, Types::UserType, null: false
+
+    def current_user
+      bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
+    
+      # Make an HTTP POST request to the backend server's RESTful API endpoint
+      uri = URI('http://localhost:3000/current_user')
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 
+        'Accept' => 'application/json',
+        'Authorization' => "Bearer #{bearer_token}"
+      })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+
+      # Check if the request was successful (HTTP status code 2xx)
+      if response.is_a?(Net::HTTPSuccess)
+          # Return the user data fetched from the backend server
+          {
+              id: data["id"],
+              email: data["email"],
+              username: data["username"],
+              displayName: data["display_name"],
+              avatar: data["avatar_url"],
+              error: nil
+          }
+      else
+          {
+              email: nil,
+              username: nil,
+              displayName: nil,
+              avatar: nil,
+              error: data["error"]
+          }
+      end
     end
+
+    field :posts, [Types::PostType] do
+      argument :userId, ID
+    end
+
+    def posts(userId:)
+      bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
+    
+      uri = URI("http://localhost:3000/users/#{userId}/posts")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 
+        'Accept' => 'application/json',
+        'Authorization' => "Bearer #{bearer_token}"
+      })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+
+      if response.is_a?(Net::HTTPSuccess)
+          data["posts"]
+      else
+          nil
+      end
+    end
+
+
+    field :post, Types::PostType do
+      argument :userId, ID
+      argument :postId, ID
+    end
+
+    def post(userId:, postId:)
+      bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
+    
+      uri = URI("http://localhost:3000/users/#{userId}/posts/#{postId}")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 
+        'Accept' => 'application/json',
+        'Authorization' => "Bearer #{bearer_token}"
+      })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+
+      if response.is_a?(Net::HTTPSuccess)
+          data
+      else
+          nil
+      end
+    end
+
+    field :categories, [Types::CategoryType]
+
+    def categories
+      uri = URI("http://localhost:3000/categories")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 'Accept' => 'application/json' })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+ 
+      if response.is_a?(Net::HTTPSuccess)
+          data["categories"]
+      else
+          nil
+      end
+    end
+
+
+    field :tags, [Types::TagType]
+
+    def tags
+      uri = URI("http://localhost:3000/tags")
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.path, { 'Accept' => 'application/json' })
+
+      response = http.request(request)
+      data = JSON.parse(response.body)
+ 
+      if response.is_a?(Net::HTTPSuccess)
+          tags = data["tags"].map do |tag| 
+            {
+              tagId: tag["id"],
+              name: tag["name"]
+            }
+          end
+      else
+          nil
+      end
+    end
+
   end
 end

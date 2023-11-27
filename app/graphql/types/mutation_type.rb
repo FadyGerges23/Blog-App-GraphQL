@@ -6,5 +6,9 @@ module Types
     field :sign_in_user, mutation: Mutations::SignInUser
     field :sign_out_user, mutation: Mutations::SignOutUser
     field :edit_user, mutation: Mutations::EditUser
+    field :create_post, mutation: Mutations::CreatePost
+    field :edit_post, mutation: Mutations::EditPost
+    field :delete_post, mutation: Mutations::DeletePost
+    field :create_tag, mutation: Mutations::CreateTag
   end
 end

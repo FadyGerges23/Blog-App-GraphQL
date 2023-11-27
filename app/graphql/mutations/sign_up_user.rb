@@ -35,7 +35,10 @@ class Mutations::SignUpUser < Mutations::BaseMutation
         if response.is_a?(Net::HTTPSuccess)
             # Return the user data fetched from the backend server
             {
-                user: data["user"].merge({ token: bearer_token }),
+                user: {
+                    id: data["user"]["id"],
+                    token: bearer_token
+                },
                 errors: []
             }
         else
