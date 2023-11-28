@@ -59,14 +59,15 @@ module Types
       end
     end
 
-    field :user_posts, [Types::PostType] do
+    field :user_posts, Types::PaginatedPostType do
       argument :userId, ID
+      argument :pageNumber, String, required: false, default_value: "1"
     end
 
-    def user_posts(userId:)
+    def user_posts(userId:, pageNumber:)
       bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
     
-      uri = URI("http://localhost:3000/users/#{userId}/user_posts")
+      uri = URI("http://localhost:3000/users/#{userId}/posts/page/#{pageNumber}")
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Get.new(uri.path, { 
         'Accept' => 'application/json',
@@ -77,7 +78,10 @@ module Types
       data = JSON.parse(response.body)
 
       if response.is_a?(Net::HTTPSuccess)
-          data["posts"]
+        {
+          pagePosts: data["posts"],
+          pagesCount: data["pagesCount"]
+        }
       else
           nil
       end
@@ -92,7 +96,7 @@ module Types
     def user_post(userId:, postId:)
       bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
     
-      uri = URI("http://localhost:3000/users/#{userId}/user_posts/#{postId}")
+      uri = URI("http://localhost:3000/users/#{userId}/posts/#{postId}")
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Get.new(uri.path, { 
         'Accept' => 'application/json',
@@ -150,10 +154,12 @@ module Types
     end
 
     
-    field :posts, [Types::PostType]
+    field :posts, PaginatedPostType do
+      argument :pageNumber, String, required: false, default_value: "1"
+    end
 
-    def posts
-      uri = URI("http://localhost:3000/posts")
+    def posts(pageNumber:)
+      uri = URI("http://localhost:3000/posts/page/#{pageNumber}")
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Get.new(uri.path, { 'Accept' => 'application/json' })
 
@@ -161,7 +167,10 @@ module Types
       data = JSON.parse(response.body)
 
       if response.is_a?(Net::HTTPSuccess)
-          data["posts"]
+          {
+            pagePosts: data["posts"],
+            pagesCount: data["pagesCount"]
+          }
       else
           nil
       end

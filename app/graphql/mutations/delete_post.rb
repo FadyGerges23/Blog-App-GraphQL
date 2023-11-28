@@ -9,7 +9,7 @@ class Mutations::DeletePost < Mutations::BaseMutation
         bearer_token = context[:headers]['Authorization']&.split('Bearer ')&.last
   
         # Make an HTTP POST request to the backend server's RESTful API endpoint
-        uri = URI("http://localhost:3000/users/#{post[:userId]}/user_posts/#{post[:postId]}")
+        uri = URI("http://localhost:3000/users/#{post[:userId]}/posts/#{post[:postId]}")
         http = Net::HTTP.new(uri.host, uri.port)
         request = Net::HTTP::Delete.new(uri.path, { 
             'Content-Type' => 'application/json',
